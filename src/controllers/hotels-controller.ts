@@ -7,7 +7,6 @@ import httpStatus from "http-status";
 
 export async function getHotels(req: AuthenticatedRequest, res: Response) {
   const { userId } = req;
-  console.log(userId);
   
   try {
     const enrollmentByUserId = await enrollmentsService.getOneWithAddressByUserId(userId);
@@ -36,3 +35,16 @@ export async function getHotels(req: AuthenticatedRequest, res: Response) {
   }
 }
 
+export async function getHotelRooms(req: AuthenticatedRequest, res: Response) {
+  const { hotelId } =  req.params;
+
+  try {
+    const hotelRooms = await hotelsService.getRoomOptions(Number(hotelId));
+    return res.status(httpStatus.OK).send(hotelRooms);
+  } catch (error) {
+    if (error.name === "UnauthorizedError") {
+      return res.sendStatus(httpStatus.UNAUTHORIZED);
+    }
+    return res.sendStatus(httpStatus.NOT_FOUND);
+  }
+}
