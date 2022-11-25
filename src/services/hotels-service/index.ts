@@ -1,12 +1,17 @@
-import { notFoundError } from "@/errors";
+import { notFoundError, requestError } from "@/errors";
 import hotelRepository from "@/repositories/hotel-repository";
+import ticketService from "../tickets-service";
 
-async function getHotelOptions() {
+async function getHotelOptions(userId: number) {
+  const ticket = await ticketService.getTicketByUserId(userId);
+  console.log("ticket");
+  if(!ticket) throw notFoundError;
+  if(!ticket.TicketType.includesHotel) throw notFoundError();
+  if(ticket.TicketType.isRemote) throw notFoundError();
+  if(ticket.status !== "PAID") throw requestError(402, "paymentPequired");
+    
   const hotels = await hotelRepository.findManyHotels();
-
-  if (!hotels) {
-    throw notFoundError();
-  }
+  console.log(hotels); 
   return hotels;
 }
 
