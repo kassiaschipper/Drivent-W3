@@ -4,14 +4,21 @@ import ticketService from "../tickets-service";
 
 async function getHotelOptions(userId: number) {
   const ticket = await ticketService.getTicketByUserId(userId);
-  console.log("ticket");
-  if(!ticket) throw notFoundError;
-  if(!ticket.TicketType.includesHotel) throw notFoundError();
-  if(ticket.TicketType.isRemote) throw notFoundError();
-  if(ticket.status !== "PAID") throw requestError(402, "paymentPequired");
+ 
+  if(ticket.status !== "PAID") {
+    throw requestError(402, "paymentRequired");
+  } 
+  if(!ticket) { 
+    throw notFoundError();
+  }
+  if(!ticket.TicketType.includesHotel) {
+    throw notFoundError();
+  } 
+  if(ticket.TicketType.isRemote) {
+    throw notFoundError();
+  } 
     
   const hotels = await hotelRepository.findManyHotels();
-  console.log(hotels); 
   return hotels;
 }
 

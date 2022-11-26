@@ -1,7 +1,5 @@
 import { AuthenticatedRequest } from "@/middlewares";
 import { Response } from "express";
-import enrollmentsService from "@/services/enrollments-service";
-import ticketService from "@/services/tickets-service";
 import hotelsService from "@/services/hotels-service";
 import httpStatus from "http-status";
 
@@ -12,11 +10,10 @@ export async function getHotels(req: AuthenticatedRequest, res: Response) {
     const hotels = await hotelsService.getHotelOptions(userId);
     return res.status(httpStatus.OK).send(hotels);
   } catch (error) {
-    console.log(error);
-    if (error.name === "RequestError") {
-      return res.sendStatus(httpStatus.PAYMENT_REQUIRED);
+    if (error.name === "NotFoundError") {
+      return res.sendStatus(httpStatus.NOT_FOUND);
     }
-    return res.sendStatus(httpStatus.NOT_FOUND);
+    return res.sendStatus(httpStatus.PAYMENT_REQUIRED);
   }
 }
 
